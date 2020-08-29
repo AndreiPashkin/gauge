@@ -66,7 +66,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='gauge',
-    version='0.0.1',
+    version=open('VERSION').read().strip(),
     author='Andrei Pashkin',
     author_email='andrew.pashkin@gmx.co.uk',
     description='Low-overhead Python profiler.',
