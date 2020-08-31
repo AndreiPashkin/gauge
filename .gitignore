@@ -249,3 +249,4 @@ dmypy.json
 # End of https://www.gitignore.io/api/c++,cmake,python,intellij
 
 thirdparty/
+docs/build/*
