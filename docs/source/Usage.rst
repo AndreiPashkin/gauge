@@ -4,7 +4,7 @@ Usage
 
 Installation
 ============
-Gauge can be installed as a regular Python package. Currently it is not
+Gauge can be installed as a regular Python package. Currently, it is not
 published on PyPI so you have to clone `the repository`__ to install it.
 
 __ project_
