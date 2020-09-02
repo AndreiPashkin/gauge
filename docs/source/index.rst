@@ -13,6 +13,8 @@ Documentation
    :caption: Contents:
 
    Introduction <self>
+   Usage
+   Development
 
 Indices and tables
 ==================
