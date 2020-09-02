@@ -5,6 +5,11 @@ if(NOT FETCH_DEPENDENCIES)
     set(FETCH_DEPENDENCIES FALSE)
 endif()
 
+FILE(GLOB deps "${THIRD_PARTY}/*")
+if(NOT deps)
+    set(FETCH_DEPENDENCIES TRUE)
+endif()
+
 # Fetch Boost.
 # TODO: Can it be made partial?
 if(FETCH_DEPENDENCIES)
