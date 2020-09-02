@@ -6,7 +6,7 @@ Low-overhead streaming (or continuous) OpenTracing-compatible Python profiler.
 Quick links
 ===========
 +----------------+------------------------------------------------+
-| Documentation  | TBD                                            |
+| Documentation  | https://gauge.readthedocs.io/en/stable/        |
 +----------------+------------------------------------------------+
 | Issue tracker  | https://github.com/AndreiPashkin/gauge/issues/ |
 +----------------+------------------------------------------------+
