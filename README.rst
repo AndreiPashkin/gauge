@@ -1,6 +1,10 @@
 =====
 Gauge
 =====
+.. image:: https://readthedocs.org/projects/gauge/badge/?version=latest
+   :target: https://gauge.readthedocs.io/en/stable/?badge=latest
+   :alt: Documentation Status
+
 Low-overhead streaming (or continuous) OpenTracing-compatible Python profiler.
 
 Quick links
