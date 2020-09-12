@@ -1,9 +1,12 @@
 Change log
 ==========
 
-WIP
----
-Currently worked on version.
+0.0.2 (2020-09-12)
+------------------
+- Documentation-generator setup (#1).
+- Initial documentation itself (#1).
+- Versioning automation (#15).
+- Improved dependencies fetching (#19).
 
 0.0.1 (2020-08-31)
 ------------------
