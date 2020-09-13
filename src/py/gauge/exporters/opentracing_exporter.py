@@ -10,7 +10,7 @@ import opentracing
 from .. import Span
 from ..utils.ttldict import TTLDict
 
-LOGGER = logging.getLogger('gauge')
+LOGGER = logging.getLogger("gauge")
 
 
 class OpenTracingExporter:
@@ -20,10 +20,9 @@ class OpenTracingExporter:
     :py:class:`opentracing.Tracer`. Provides an interface compatible with
     aggregators emitting spans.
     """
+
     def __init__(
-        self,
-        tracer: opentracing.Tracer = None,
-        ignore_active_span=True
+        self, tracer: opentracing.Tracer = None, ignore_active_span=True
     ):
         if tracer is None:
             tracer = opentracing.global_tracer()
@@ -41,8 +40,7 @@ class OpenTracingExporter:
         self.__context_by_pid_tid = TTLDict(ttl=30.0)
 
         self.__strip_levels: Dict[
-            Tuple[Optional[int], Optional[int]],
-            int
+            Tuple[Optional[int], Optional[int]], int
         ] = {}
         self.__lock = Lock()
 
@@ -118,18 +116,15 @@ class OpenTracingExporter:
     def __start_span(self, span):
         if span.id in self.__span_by_id:
             LOGGER.debug(
-                'Duplicate span with lifetime \'Start\' '
-                'with id \'%s\'',
-                span.id
+                "Duplicate span with lifetime 'Start' " "with id '%s'", span.id
             )
             return
         kwargs = {
-            'operation_name': span.symbolic_name,
-            'start_time': span.timestamp.timestamp(),
-            'ignore_active_span': (
-                self.__ignore_active_span and
-                self.__is_top(span)
-            )
+            "operation_name": span.symbolic_name,
+            "start_time": span.timestamp.timestamp(),
+            "ignore_active_span": (
+                self.__ignore_active_span and self.__is_top(span)
+            ),
         }
         if not span.is_top:
             try:
@@ -138,33 +133,28 @@ class OpenTracingExporter:
                 ]
             except KeyError:
                 LOGGER.warning(
-                    'Parent span with id \'%s\' is not found.',
-                    span.parent_id
+                    "Parent span with id '%s' is not found.", span.parent_id
                 )
                 return
-            kwargs['child_of'] = parent_ot_span
+            kwargs["child_of"] = parent_ot_span
             LOGGER.debug(
-                '%s is child of %s',
+                "%s is child of %s",
                 span.symbolic_name,
-                parent_span.symbolic_name
+                parent_span.symbolic_name,
             )
         else:
-            LOGGER.debug(
-                'Top span: %s',
-                span.symbolic_name
-            )
-        kwargs['tags'] = {
-            'hostname': span.hostname,
-            'process_id': span.process_id,
-            'thread_id': span.thread_id,
-            'file_name': span.file_name,
-            'line_number': span.line_number,
-            'is_coroutine': span.is_coroutine,
-            'is_generator': span.is_generator
+            LOGGER.debug("Top span: %s", span.symbolic_name)
+        kwargs["tags"] = {
+            "hostname": span.hostname,
+            "process_id": span.process_id,
+            "thread_id": span.thread_id,
+            "file_name": span.file_name,
+            "line_number": span.line_number,
+            "is_coroutine": span.is_coroutine,
+            "is_generator": span.is_generator,
         }
         context = self.__context_by_pid_tid.setdefault(
-            (span.process_id, span.thread_id),
-            contextvars.Context()
+            (span.process_id, span.thread_id), contextvars.Context()
         )
         should_strip = self.__should_strip(span)
         ot_span = None
@@ -173,10 +163,10 @@ class OpenTracingExporter:
 
         self.__span_by_id[span.id] = (span, ot_span, should_strip)
         LOGGER.debug(
-            'Started span with id \'%s\' and name \'%s\'%s.',
+            "Started span with id '%s' and name '%s'%s.",
             span.id,
             span.symbolic_name,
-            ' as stripped' if should_strip else '',
+            " as stripped" if should_strip else "",
         )
 
     def __get_span_by_id(self, span_id, remove=False, quiet=False):
@@ -187,17 +177,13 @@ class OpenTracingExporter:
                 return self.__span_by_id[span_id]
         except KeyError:
             if not quiet:
-                LOGGER.warning(
-                    'Span with id \'%s\' is not found.',
-                    span_id
-                )
+                LOGGER.warning("Span with id '%s' is not found.", span_id)
             raise
 
     def __end_span(self, span):
         try:
             start_span, start_ot_span, is_stripped = self.__get_span_by_id(
-                span.id,
-                remove=True
+                span.id, remove=True
             )
         except KeyError:
             return
@@ -211,16 +197,14 @@ class OpenTracingExporter:
         LOGGER.debug(
             "Ending span '%s'. Duration: %s...",
             start_span.symbolic_name,
-            span.timestamp - start_span.timestamp
+            span.timestamp - start_span.timestamp,
         )
         context = self.__context_by_pid_tid.setdefault(
-            (span.process_id, span.thread_id),
-            contextvars.copy_context()
+            (span.process_id, span.thread_id), contextvars.copy_context()
         )
         try:
             context.run(
-                start_ot_span.finish,
-                finish_time=span.timestamp.timestamp()
+                start_ot_span.finish, finish_time=span.timestamp.timestamp()
             )
         except Exception as exc:
             LOGGER.warning(exc, exc_info=sys.exc_info())
@@ -229,21 +213,21 @@ class OpenTracingExporter:
         for span in spans:
             if span.lifetime == Span.SpanLifeTime.Start:
                 LOGGER.debug(
-                    'Processing start-span with id \'%s\', name \'%s\' and '
-                    'timestamp \'%s\'.',
+                    "Processing start-span with id '%s', name '%s' and "
+                    "timestamp '%s'.",
                     span.id,
                     span.symbolic_name,
-                    span.timestamp
+                    span.timestamp,
                 )
                 with self.__lock:
                     self.__start_span(span)
             elif span.lifetime == Span.SpanLifeTime.End:
                 LOGGER.debug(
-                    'Processing end-span with id \'%s\', name \'%s\' and '
-                    'timestamp \'%s\'.',
+                    "Processing end-span with id '%s', name '%s' and "
+                    "timestamp '%s'.",
                     span.id,
                     span.symbolic_name,
-                    span.timestamp
+                    span.timestamp,
                 )
                 with self.__lock:
                     self.__end_span(span)

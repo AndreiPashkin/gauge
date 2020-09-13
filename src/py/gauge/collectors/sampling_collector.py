@@ -8,11 +8,11 @@ class SamplingCollector(CollectorInterface):
     def __init__(
         self,
         sampling_interval: dt.timedelta = dt.timedelta(microseconds=1000),
-        processing_interval: dt.timedelta = dt.timedelta(microseconds=1000000)
+        processing_interval: dt.timedelta = dt.timedelta(microseconds=1000000),
     ):
         self.__impl = SamplingCollectorImpl(
             sampling_interval=sampling_interval,
-            processing_interval=processing_interval
+            processing_interval=processing_interval,
         )
 
     def subscribe(self, callback: CollectorInterface.CollectCallback):

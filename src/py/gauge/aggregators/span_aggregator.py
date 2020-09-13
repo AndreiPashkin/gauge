@@ -7,8 +7,7 @@ from _gauge import SpanAggregator as SpanAggregatorImpl
 
 class SpanAggregator:
     def __init__(
-        self,
-        span_ttl: dt.timedelta = dt.timedelta(milliseconds=200)
+        self, span_ttl: dt.timedelta = dt.timedelta(milliseconds=200)
     ):
         self.__impl = SpanAggregatorImpl(span_ttl=span_ttl)
 

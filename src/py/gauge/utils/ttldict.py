@@ -6,6 +6,7 @@ from collections.abc import MutableMapping
 
 class TTLDict(MutableMapping):
     """Dictionary where keys are expiring with time."""
+
     def __init__(self, data=None, *, ttl):
         self.__mutex = Lock()
         if data is None:
