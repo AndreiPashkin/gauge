@@ -14,6 +14,8 @@ Quick links
 +----------------+------------------------------------------------+
 | Issue tracker  | https://github.com/AndreiPashkin/gauge/issues/ |
 +----------------+------------------------------------------------+
+| Repository     | https://github.com/AndreiPashkin/gauge/        |
++----------------+------------------------------------------------+
 
 Why another profiler?
 =====================
