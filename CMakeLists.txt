@@ -66,3 +66,14 @@ pybind11_add_module(_gauge ${GAUGE_SOURCES})
 target_link_libraries(_gauge PRIVATE fmt::fmt)
 target_link_libraries(_gauge PRIVATE spdlog::spdlog)
 target_link_libraries(_gauge PRIVATE Boost::boost)
+
+file(GLOB_RECURSE GAUGE_SOURCES_AND_HEADERS include/* src/cpp/*)
+
+add_custom_target(
+    clang-format
+    COMMAND scripts/format.py ${GAUGE_SOURCES_AND_HEADERS}
+)
+add_custom_target(
+    clang-format-check
+    COMMAND scripts/format.py --check ${GAUGE_SOURCES_AND_HEADERS}
+)
