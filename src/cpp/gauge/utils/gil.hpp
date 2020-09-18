@@ -9,11 +9,12 @@ class GILGuard {
 public:
     GILGuard();
     ~GILGuard();
+
 private:
     PyGILState_STATE gil_state;
 };
 
-}
-}
+} // namespace detail
+} // namespace gauge
 
-#endif //GAUGE_GIL_HPP
+#endif // GAUGE_GIL_HPP

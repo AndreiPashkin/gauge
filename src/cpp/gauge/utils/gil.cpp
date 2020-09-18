@@ -2,10 +2,6 @@
 
 using namespace gauge;
 
-detail::GILGuard::GILGuard() :
-    gil_state(PyGILState_Ensure())
-    {}
+detail::GILGuard::GILGuard() : gil_state(PyGILState_Ensure()) {}
 
-detail::GILGuard::~GILGuard() {
-    PyGILState_Release(gil_state);
-}
+detail::GILGuard::~GILGuard() { PyGILState_Release(gil_state); }

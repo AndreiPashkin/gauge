@@ -8,8 +8,8 @@
 
 #include <Python.h>
 
-#include <gauge/utils/gil.hpp>
 #include <gauge/utils/benchmark.hpp>
+#include <gauge/utils/gil.hpp>
 
 using namespace gauge;
 
@@ -18,17 +18,13 @@ namespace detail {
 
 inline std::string safe_encode(PyObject *unicode) {
     detail::GILGuard gil_guard;
-    auto bytes = PyUnicode_AsEncodedString(
-        unicode,
-        "utf-8",
-        "replace"
-    );
+    auto bytes  = PyUnicode_AsEncodedString(unicode, "utf-8", "replace");
     auto result = std::string(PyBytes_AsString(bytes));
     Py_DecRef(bytes);
     return result;
 }
 
-}
-}
+} // namespace detail
+} // namespace gauge
 
-#endif //GAUGE_COMMON_HPP
+#endif // GAUGE_COMMON_HPP
