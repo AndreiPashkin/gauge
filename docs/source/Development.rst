@@ -98,3 +98,26 @@ To format code::
 To check code formatting::
 
     tox -e black -- --check
+
+C++
+...
+
+Clang-Format
+~~~~~~~~~~~~
+Clang-Format_ is a formatting tool for C++ and other languages.
+
+.. _Clang-Format: https://clang.llvm.org/docs/ClangFormat.html
+
+Usage
+*****
+Before running any commands it's needed to generate build system::
+
+    cmake .
+
+Then - to format code::
+
+    make clang-format
+
+To check code formatting::
+
+    make clang-format-check
