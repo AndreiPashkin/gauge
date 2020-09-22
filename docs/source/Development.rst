@@ -69,3 +69,32 @@ Contribution guide
 ==================
 Nothing complex for now - just create an issue on the issue tracker or comment
 on the existing one and then make a pull request ;)
+
+Tools
+=====
+Project has a number of auxiliary static analysis and formatting tools for
+Python and C++ code, this section describes how to use them. Python tools are
+configured to be used through Tox and C++ tools - through CMake.
+
+Formatters / Style checkers
+---------------------------
+
+Python
+......
+
+Black
+~~~~~
+Black_ is a code-formatting tool with minimal configuration, it can format
+Python code or check correctness of formatting.
+
+.. _Black: https://github.com/psf/black
+
+Usage
+*****
+To format code::
+
+    tox -e black
+
+To check code formatting::
+
+    tox -e black -- --check
