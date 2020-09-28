@@ -188,7 +188,10 @@ void SpanAggregator::sort_spans(
         if (previous != nullptr) {
             if (previous->monotonic_clock_timestamp >
                 e->monotonic_clock_timestamp) {
+                // clang-format off
+                // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
                 BOOST_ASSERT(false);
+                // clang-format on
             }
         }
         previous = e.get();
@@ -236,6 +239,7 @@ void SpanAggregator::add_span(
     auto  it        = by_id_idx.find(span->id);
     if (it != by_id_idx.end()) {
         // Span is already indexed - replace it.
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
         BOOST_ASSERT(cookie == it->cookie);
         by_id_idx.replace(it, {cookie, span});
         return;
@@ -247,7 +251,9 @@ void SpanAggregator::add_span(
         sibling_it->span->process_id == span->process_id &&
         sibling_it->span->thread_id == span->thread_id) {
         // Open sibling exists - end it.
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
         BOOST_ASSERT(sibling_it->span->id != span->id);
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
         BOOST_ASSERT(cookie != sibling_it->cookie);
         SPDLOG_LOGGER_TRACE(
             logger,
@@ -293,6 +299,7 @@ void SpanAggregator::remove_span(
         span->symbolic_name,
         span->id);
     auto &by_id_idx = open_spans.get<by_id>();
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     BOOST_ASSERT(by_id_idx.find(span->id) != by_id_idx.end());
 
     auto &by_parent_id_idx = open_spans.get<by_parent_id>();

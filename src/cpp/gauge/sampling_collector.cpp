@@ -247,6 +247,7 @@ void SamplingCollector::processor() {
                 auto prev_frame = it;
                 it++;
                 for (; it != end; it++) {
+                    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
                     BOOST_ASSERT(
                         prev_frame->monotonic_clock_timestamp <=
                         it->monotonic_clock_timestamp);
@@ -268,6 +269,7 @@ void SamplingCollector::processor() {
             }
             last_topmost_frame = end;
             last_topmost_frame--;
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
             BOOST_ASSERT(begin == end || last_topmost_frame->is_topmost);
             for (auto it = begin; it != end;) {
                 auto frames = std::vector<RawFrame *>();
@@ -304,6 +306,7 @@ void SamplingCollector::processor() {
                 TraceSample *prev_trace = nullptr;
                 for (auto const &item : *traces) {
                     if (prev_trace != nullptr) {
+                        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
                         BOOST_ASSERT(
                             prev_trace->monotonic_clock_timestamp <=
                             item->monotonic_clock_timestamp);
@@ -377,6 +380,7 @@ bool SamplingCollector::collect_frames(
     PyObject * thread_id = nullptr, *value = nullptr;
     Py_ssize_t position = 0;
     while (PyDict_Next(raw_frames, &position, &thread_id, &value)) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         auto frame         = reinterpret_cast<PyFrameObject *>(value);
         bool is_bottommost = true;
         bool is_topmost    = false;
@@ -406,11 +410,13 @@ SamplingCollector::RawFrame::RawFrame(
     Py_XINCREF(thread_id);
     this->thread_id = thread_id;
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     Py_XINCREF(reinterpret_cast<PyObject *>(frame));
     this->frame = frame;
     // Use address of the frame object as a cookie assuming
     // that for the same function there would be the same frame with the
     // same memory address (which is also the object's ID in CPython).
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     cookie = reinterpret_cast<unsigned long long int>(frame);
     if (frame->f_gen == nullptr) {
         is_coroutine = false;
@@ -428,6 +434,7 @@ SamplingCollector::RawFrame::RawFrame(
 
 SamplingCollector::RawFrame::~RawFrame() {
     Py_XDECREF(thread_id);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     Py_XDECREF(reinterpret_cast<PyObject *>(frame));
 }
 
@@ -460,6 +467,7 @@ SamplingCollector::construct_frame(const RawFrame &raw_frame) {
 
 std::unique_ptr<TraceSample>
 SamplingCollector::construct_trace(const std::vector<RawFrame *> &raw_frames) {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
     BOOST_ASSERT(!raw_frames.empty());
     auto trace_sample = std::make_unique<TraceSample>();
     trace_sample->frames =

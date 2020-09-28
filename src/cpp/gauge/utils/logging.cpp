@@ -10,8 +10,12 @@ using namespace gauge;
 
 namespace gauge {
 namespace detail {
+// TODO: Even though these are not meant to be global variables they are
+//       still ugly, let's refactor it.
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 static std::shared_ptr<spdlog::logger> logger;
-static std::recursive_mutex            logger_mutex;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+static std::recursive_mutex logger_mutex;
 static const std::unordered_map<std::string, spdlog::level::level_enum>
     levels_map = {
         {"CRITICAL", spdlog::level::level_enum::critical},

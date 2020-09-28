@@ -22,7 +22,10 @@ PYBIND11_MAKE_OPAQUE(std::vector<std::shared_ptr<Span>>);
 
 // TODO: 1. Make __repr__(), __hash__(), __eq__(), __ne__()
 //          for Frame and Trace classes.
+// clang-format off
+// NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-vararg)
 PYBIND11_MODULE(_gauge, m) {
+    // clang-format on
     py::bind_vector<
         std::vector<std::shared_ptr<TraceSample>>,
         std::shared_ptr<std::vector<std::shared_ptr<TraceSample>>>>(
