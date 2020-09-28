@@ -62,7 +62,7 @@ include_directories(src/cpp/)
 file(GLOB GAUGE_SOURCES "src/cpp/gauge/*.cpp" "src/cpp/gauge/utils/*.cpp")
 
 # Declare main target as per pybind11 docs: https://git.io/JfTfU.
-pybind11_add_module(_gauge ${GAUGE_SOURCES})
+pybind11_add_module(_gauge ${GAUGE_SOURCES} SYSTEM)
 target_link_libraries(_gauge PRIVATE fmt::fmt)
 target_link_libraries(_gauge PRIVATE spdlog::spdlog)
 target_link_libraries(_gauge PRIVATE Boost::boost)
