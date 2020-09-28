@@ -156,7 +156,8 @@ private:
     /**
      * Factory function for gauge::Trace objects.
      */
-    TraceSample *construct_trace(const std::vector<RawFrame *> &raw_frames);
+    std::unique_ptr<TraceSample>
+    construct_trace(const std::vector<RawFrame *> &raw_frames);
 };
 } // namespace sampling_collector_impl
 

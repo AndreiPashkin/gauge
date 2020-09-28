@@ -294,7 +294,7 @@ void SamplingCollector::processor() {
                         continue;
                     }
                 }
-                traces->emplace_back(trace);
+                traces->emplace_back(std::move(trace));
             }
             {
                 detail::GILGuard gil_guard;
@@ -459,10 +459,10 @@ Frame *SamplingCollector::construct_frame(const RawFrame &raw_frame) {
     return frame;
 }
 
-TraceSample *
+std::unique_ptr<TraceSample>
 SamplingCollector::construct_trace(const std::vector<RawFrame *> &raw_frames) {
     BOOST_ASSERT(!raw_frames.empty());
-    auto trace_sample = new TraceSample{};
+    auto trace_sample = std::make_unique<TraceSample>();
     trace_sample->frames =
         std::make_shared<std::vector<std::shared_ptr<Frame>>>();
     trace_sample->monotonic_clock_timestamp =
