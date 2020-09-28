@@ -186,7 +186,7 @@ void SpanAggregator::sort_spans(
         if (previous != nullptr) {
             if (previous->monotonic_clock_timestamp >
                 e->monotonic_clock_timestamp) {
-                assert(false);
+                BOOST_ASSERT(false);
             }
         }
         previous = e.get();

@@ -249,7 +249,7 @@ void SamplingCollector::processor() {
                 auto prev_frame = it;
                 it++;
                 for (; it != end; it++) {
-                    assert(
+                    BOOST_ASSERT(
                         prev_frame->monotonic_clock_timestamp <=
                         it->monotonic_clock_timestamp);
                     prev_frame = it;
@@ -306,7 +306,7 @@ void SamplingCollector::processor() {
                 TraceSample *prev_trace = nullptr;
                 for (auto const &item : *traces) {
                     if (prev_trace != nullptr) {
-                        assert(
+                        BOOST_ASSERT(
                             prev_trace->monotonic_clock_timestamp <=
                             item->monotonic_clock_timestamp);
                     }
