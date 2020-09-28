@@ -149,10 +149,10 @@ private:
     void process_open_spans(
         std::shared_ptr<std::vector<std::shared_ptr<Span>>> &spans,
         bool force_finish = false);
-    Span *     to_end_span(const std::shared_ptr<Span> &span);
-    py::object py_context;
-    void       sort_spans(
-              const std::shared_ptr<std::vector<std::shared_ptr<Span>>> &spans);
+    std::unique_ptr<Span> to_end_span(const std::shared_ptr<Span> &span);
+    py::object            py_context;
+    void                  sort_spans(
+                         const std::shared_ptr<std::vector<std::shared_ptr<Span>>> &spans);
     void execute_callbacks(
         std::shared_ptr<std::vector<std::shared_ptr<Span>>> &spans);
 };

@@ -57,8 +57,9 @@ void SpanAggregator::execute_callbacks(
     }
 }
 
-Span *SpanAggregator::to_end_span(const std::shared_ptr<Span> &span) {
-    Span *end_span     = new Span(*span);
+std::unique_ptr<Span>
+SpanAggregator::to_end_span(const std::shared_ptr<Span> &span) {
+    auto end_span      = std::make_unique<Span>(*span);
     end_span->lifetime = Span::End;
     return end_span;
 }
@@ -78,7 +79,8 @@ void SpanAggregator::process_open_spans(
             ((offset - span_ptr->monotonic_clock_timestamp) > span_ttl);
         if (has_span_ttl_expired || force_finish) {
             if (span_ptr->lifetime == Span::Start) {
-                auto end_span = std::shared_ptr<Span>(to_end_span(span_ptr));
+                auto end_span =
+                    std::shared_ptr<Span>(std::move(to_end_span(span_ptr)));
                 add_span(end_span, open_span.cookie, *spans);
                 spans_to_end.emplace_back(open_span.cookie, end_span);
             } else if (span_ptr->lifetime == Span::End) {
@@ -296,8 +298,9 @@ void SpanAggregator::remove_span(
     auto &by_parent_id_idx = open_spans.get<by_parent_id>();
     auto  current_span     = span;
     while (true) {
-        auto end_span       = std::shared_ptr<Span>(to_end_span(current_span));
-        end_span->timestamp = timestamp;
+        auto end_span =
+            std::shared_ptr<Span>(std::move(to_end_span(current_span)));
+        end_span->timestamp                 = timestamp;
         end_span->monotonic_clock_timestamp = monotonic_clock_timestamp;
         spans.push_back(end_span);
         by_id_idx.erase(current_span->id);
