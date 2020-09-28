@@ -33,6 +33,10 @@ public:
         std::chrono::steady_clock::duration processing_interval = 3s,
         bool                                ignore_own_threads  = true);
 
+    SamplingCollector(const SamplingCollector &collector)     = delete;
+    SamplingCollector(SamplingCollector &&collector) noexcept = delete;
+    SamplingCollector &operator=(const SamplingCollector &collector) = delete;
+    SamplingCollector &operator=(SamplingCollector &&collector) = delete;
     ~SamplingCollector() override;
 
     void subscribe(CallbackInterface &callback) override;
@@ -76,7 +80,9 @@ private:
             bool                                is_topmost    = false,
             bool                                is_bottommost = false);
         RawFrame(RawFrame &&raw_frame) noexcept;
-
+        RawFrame &operator                  =(RawFrame &&raw_frame) noexcept;
+        RawFrame(const RawFrame &raw_frame) = delete;
+        RawFrame &operator=(const RawFrame &raw_frame) = delete;
         ~RawFrame();
     };
 
