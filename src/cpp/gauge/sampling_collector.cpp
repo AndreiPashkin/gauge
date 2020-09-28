@@ -443,8 +443,9 @@ SamplingCollector::RawFrame::RawFrame(RawFrame &&raw_frame) noexcept
     raw_frame.thread_id = nullptr;
 }
 
-Frame *SamplingCollector::construct_frame(const RawFrame &raw_frame) {
-    auto frame = new Frame{};
+std::unique_ptr<Frame>
+SamplingCollector::construct_frame(const RawFrame &raw_frame) {
+    auto frame = std::make_unique<Frame>();
 
     // TODO: Implement retrieval of fully qualified name of the object.
 
@@ -480,7 +481,8 @@ SamplingCollector::construct_trace(const std::vector<RawFrame *> &raw_frames) {
     }
 
     for (const auto &raw_frame : raw_frames) {
-        trace_sample->frames->emplace_back(construct_frame(*raw_frame));
+        trace_sample->frames->emplace_back(
+            std::move(construct_frame(*raw_frame)));
     }
     return trace_sample;
 }

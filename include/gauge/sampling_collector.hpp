@@ -151,7 +151,7 @@ private:
     /**
      * Factory function for gauge::Frame objects.
      */
-    Frame *construct_frame(const RawFrame &raw_frame);
+    std::unique_ptr<Frame> construct_frame(const RawFrame &raw_frame);
 
     /**
      * Factory function for gauge::Trace objects.
