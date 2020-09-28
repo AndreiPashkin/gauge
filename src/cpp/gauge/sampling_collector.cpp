@@ -128,8 +128,6 @@ void SamplingCollector::set_collection_interval(
     processing_interval = interval;
 }
 
-static Timer timer;
-
 void SamplingCollector::collector() {
     auto previous_timestamp           = std::chrono::steady_clock::now();
     bool has_sampling_interval_passed = false;
