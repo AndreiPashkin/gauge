@@ -6,8 +6,8 @@
 class Timer {
 private:
     struct Average {
-        long long observations_count = 0;
-        double    average            = 0;
+        long long   observations_count = 0;
+        long double average            = 0;
     };
     std::unordered_map<std::string, Average> averages;
     std::unordered_map<std::string, std::chrono::steady_clock::time_point>
@@ -23,7 +23,7 @@ public:
         auto now        = std::chrono::steady_clock::now();
         auto start_time = pending.at(label);
         auto duration =
-            std::chrono::duration<double>(now - start_time).count();
+            std::chrono::duration<long double>(now - start_time).count();
         averages[label].observations_count += 1;
         averages[label].average =
             (averages[label].average *
@@ -32,7 +32,7 @@ public:
              duration / averages[label].observations_count);
         return duration;
     }
-    inline double get_average(std::string label) {
+    inline long double get_average(std::string label) {
         return averages[label].average;
     }
 };
