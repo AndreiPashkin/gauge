@@ -1,6 +1,9 @@
 #ifndef CHRONO_UTILS_HPP
 #define CHRONO_UTILS_HPP
 #include "cmath"
+#include <chrono>
+#include <limits>
+#include <tuple>
 
 namespace gauge {
 namespace detail {
