@@ -70,6 +70,10 @@ target_link_libraries(_gauge PRIVATE Boost::boost)
 file(GLOB_RECURSE GAUGE_SOURCES_AND_HEADERS include/* src/cpp/*)
 
 add_custom_target(
+    clang-tidy
+    COMMAND clang-tidy -config='' ${GAUGE_SOURCES_AND_HEADERS}
+)
+add_custom_target(
     clang-format
     COMMAND scripts/format.py ${GAUGE_SOURCES_AND_HEADERS}
 )
