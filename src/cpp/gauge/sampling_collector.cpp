@@ -60,7 +60,7 @@ void SamplingCollector::stop() { finalize(); }
 bool SamplingCollector::is_stopped() const { return is_stopped_flag; }
 
 void SamplingCollector::register_own_thread() {
-    unsigned long long own_thread_id;
+    unsigned long long own_thread_id = 0;
     {
         detail::GILGuard gil_guard;
         own_thread_id = py::cast<unsigned long long>(
@@ -131,8 +131,8 @@ void SamplingCollector::set_collection_interval(
 static Timer timer;
 
 void SamplingCollector::collector() {
-    auto previous_timestamp = std::chrono::steady_clock::now();
-    bool has_sampling_interval_passed;
+    auto previous_timestamp           = std::chrono::steady_clock::now();
+    bool has_sampling_interval_passed = false;
 
     SPDLOG_LOGGER_DEBUG(logger, "Launching profile data sampling...");
     {
@@ -205,8 +205,8 @@ void SamplingCollector::collector() {
 }
 
 void SamplingCollector::processor() {
-    auto previous_processing_timestamp = std::chrono::steady_clock::now();
-    bool has_processing_interval_passed;
+    auto previous_processing_timestamp  = std::chrono::steady_clock::now();
+    bool has_processing_interval_passed = false;
 
     SPDLOG_LOGGER_DEBUG(logger, "Launching processing...");
     try {
@@ -328,7 +328,7 @@ void SamplingCollector::processor() {
                     SPDLOG_LOGGER_TRACE(logger, "Calling Python callbacks...");
                     for (const auto &callback : py_collect_callbacks) {
                         detail::GILGuard gil_guard;
-                        int              error_code;
+                        int              error_code = 0;
                         error_code = PyContext_Enter(py_context.ptr());
                         if (error_code != 0) {
                             auto msg = "Failed to enter Python "
@@ -376,7 +376,7 @@ bool SamplingCollector::collect_frames(
         return false;
     }
 
-    PyObject * thread_id, *value;
+    PyObject * thread_id = nullptr, *value = nullptr;
     Py_ssize_t position = 0;
     while (PyDict_Next(raw_frames, &position, &thread_id, &value)) {
         auto frame         = reinterpret_cast<PyFrameObject *>(value);

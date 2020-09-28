@@ -37,7 +37,7 @@ void SpanAggregator::execute_callbacks(
             SPDLOG_LOGGER_TRACE(logger, "Calling Python callbacks...");
             for (const auto &callback : py_callbacks) {
                 detail::GILGuard gil_guard;
-                int              error_code;
+                int              error_code = 0;
                 error_code = PyContext_Enter(py_context.ptr());
                 if (error_code != 0) {
                     auto msg = "Failed to enter Python contextvars context.";
