@@ -1,18 +1,9 @@
 set(THIRD_PARTY ${CMAKE_SOURCE_DIR}/thirdparty)
 file(MAKE_DIRECTORY ${THIRD_PARTY})
 
-if(NOT FETCH_DEPENDENCIES)
-    set(FETCH_DEPENDENCIES FALSE)
-endif()
-
-FILE(GLOB deps "${THIRD_PARTY}/*")
-if(NOT deps)
-    set(FETCH_DEPENDENCIES TRUE)
-endif()
-
 # Fetch Boost.
 # TODO: Can it be made partial?
-if(FETCH_DEPENDENCIES)
+if(NOT EXISTS "${THIRD_PARTY}/boost/")
     message(NOTICE "Fetching Boost...")
     FetchContent_Declare(
         boost
@@ -58,12 +49,12 @@ if(FETCH_DEPENDENCIES)
 endif()
 
 # Fetch Pybind11.
-if(FETCH_DEPENDENCIES)
+if(NOT EXISTS "${THIRD_PARTY}/pybind11/")
     message(NOTICE "Fetching Pybind11...")
     FetchContent_Declare(
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG        v2.5.0
+        GIT_TAG        v2.6.1
         GIT_PROGRESS   TRUE
         GIT_SHALLOW    TRUE
         SOURCE_DIR     ${THIRD_PARTY}/pybind11
@@ -71,10 +62,10 @@ if(FETCH_DEPENDENCIES)
     if(NOT pybind11_POPULATED)
         FetchContent_Populate(pybind11)
     endif()
-endif(FETCH_DEPENDENCIES)
+endif()
 
 # Fetch Fmt library.
-if(FETCH_DEPENDENCIES)
+if(NOT EXISTS "${THIRD_PARTY}/fmt/")
     message(NOTICE "Fetching Fmt...")
     FetchContent_Declare(
         fmt
@@ -90,7 +81,7 @@ if(FETCH_DEPENDENCIES)
 endif()
 
 # Fetch Spdlog.
-if(FETCH_DEPENDENCIES)
+if(NOT EXISTS "${THIRD_PARTY}/spdlog/")
     message(NOTICE "Fetching Spdlog...")
     FetchContent_Declare(
         spdlog
@@ -104,5 +95,3 @@ if(FETCH_DEPENDENCIES)
         FetchContent_Populate(spdlog)
     endif()
 endif()
-
-unset(FETCH_DEPENDENCIES CACHE)
