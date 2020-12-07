@@ -16,6 +16,64 @@
 namespace py = pybind11;
 using namespace gauge;
 
+class PyCollectorInterface : public CollectorInterface {
+public:
+    using CollectorInterface::CollectorInterface;
+
+    void subscribe(CallbackInterface &callback) override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, subscribe, callback);
+    }
+    void subscribe(py::object callback) override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, subscribe, callback);
+    }
+    void start() override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, start);
+    }
+    void resume() override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, resume);
+    }
+    bool is_paused() override {
+        PYBIND11_OVERRIDE_PURE(bool, CollectorInterface, is_paused);
+    }
+    void pause() override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, pause);
+    }
+    void stop() override {
+        PYBIND11_OVERRIDE_PURE(void, CollectorInterface, pause);
+    }
+    bool is_stopped() const override {
+        PYBIND11_OVERRIDE_PURE(bool, CollectorInterface, is_stopped);
+    }
+};
+
+class PySamplingCollector : public SamplingCollector {
+public:
+    using SamplingCollector::SamplingCollector;
+
+    void subscribe(CallbackInterface &callback) override {
+        PYBIND11_OVERRIDE(void, SamplingCollector, subscribe, callback);
+    }
+    void subscribe(py::object callback) override {
+        PYBIND11_OVERRIDE(void, SamplingCollector, subscribe, callback);
+    }
+    void start() override {
+        PYBIND11_OVERRIDE(void, SamplingCollector, start);
+    }
+    void resume() override {
+        PYBIND11_OVERRIDE(void, SamplingCollector, resume);
+    }
+    bool is_paused() override {
+        PYBIND11_OVERRIDE(bool, SamplingCollector, is_paused);
+    }
+    void pause() override {
+        PYBIND11_OVERRIDE(void, SamplingCollector, pause);
+    }
+    void stop() override { PYBIND11_OVERRIDE(void, SamplingCollector, pause); }
+    bool is_stopped() const override {
+        PYBIND11_OVERRIDE(bool, SamplingCollector, is_stopped);
+    }
+};
+
 PYBIND11_MAKE_OPAQUE(std::vector<std::shared_ptr<TraceSample>>);
 PYBIND11_MAKE_OPAQUE(std::vector<std::shared_ptr<Frame>>);
 PYBIND11_MAKE_OPAQUE(std::vector<std::shared_ptr<Span>>);
@@ -163,12 +221,29 @@ PYBIND11_MODULE(_gauge, m) {
         .def_readwrite("thread_id", &Span::thread_id)
         .def_readwrite("process_id", &Span::process_id)
         .def_readwrite("hostname", &Span::hostname);
-    // gauge.SpanLifetime
+    // gauge.SpanLifeTime
     py::enum_<Span::SpanLifeTime>(PySpan, "SpanLifeTime")
         .value("Start", Span::SpanLifeTime::Start)
         .value("End", Span::SpanLifeTime::End);
+    // TODO: Expose CollectorInterface::CallbackInterface to Python as well.
+    // gauge.CollectorInterface
+    py::class_<CollectorInterface, PyCollectorInterface>(
+        m,
+        "CollectorInterface")
+        .def(
+            "subscribe",
+            (void (CollectorInterface::*)(py::object)) &
+                CollectorInterface::subscribe)
+        .def("start", &CollectorInterface::start)
+        .def("pause", &CollectorInterface::pause)
+        .def("is_paused", &CollectorInterface::is_paused)
+        .def("resume", &CollectorInterface::resume)
+        .def("stop", &CollectorInterface::stop)
+        .def("is_stopped", &CollectorInterface::is_stopped);
     // gauge.SamplingCollector
-    py::class_<SamplingCollector>(m, "SamplingCollector")
+    py::class_<SamplingCollector, CollectorInterface, PySamplingCollector>(
+        m,
+        "SamplingCollector")
         .def(
             py::init<
                 std::chrono::steady_clock::duration,

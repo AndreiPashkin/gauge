@@ -1,5 +1,4 @@
-from .base import CollectorInterface
-from .sampling_collector import SamplingCollector
+from _gauge import CollectorInterface, SamplingCollector
 
 
 __all__ = ["CollectorInterface", "SamplingCollector"]

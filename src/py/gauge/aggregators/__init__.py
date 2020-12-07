@@ -1,4 +1,4 @@
-from .span_aggregator import SpanAggregator
+from _gauge import SpanAggregator
 
 
 __all__ = ["SpanAggregator"]
