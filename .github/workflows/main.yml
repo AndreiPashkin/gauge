@@ -9,6 +9,9 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 jobs:
   black-check:
     runs-on: ubuntu-18.04
@@ -101,3 +104,97 @@ jobs:
             deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
       - run: cmake .
       - run: make clang-format-check
+  sonarlint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8-dev'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Cache Pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+      - name: Cache Tox environments
+        uses: actions/cache@v2
+        with:
+          path: .tox
+          key: ${{ runner.os }}-tox-${{ hashFiles('tox.ini') }}
+      - name: Install Tox
+        run: pip install tox>=3
+      - name: Cache C++ third-party dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/thirdparty
+          key: ${{ runner.os }}-thirdparty-${{ hashFiles('FetchDependencies.cmake') }}
+      - name: SonarLint cache
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ hashFiles('sonar-project.properties') }}
+      - name: Install CMake 3.19
+        run: sudo snap install cmake --channel=3.19/stable --classic
+      - name: Install Clang
+        run: |
+          sudo apt-get purge -y clang*
+          sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y clang-11 lldb-11 lld-11 clangd-11
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang-11 100
+          sudo update-alternatives --set clang++ /usr/bin/clang-11
+        env:
+          CLANG_APT: |
+            # i386 not available
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            # 10
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            # 11
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+      - name: Install SonarScanner
+        env:
+          SONAR_HOME: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_VERSION: 4.4.0.2170
+        run: |
+          mkdir -p ~/.sonar/
+          export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+          wget -O ~/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+          unzip -o ~/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+          export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+
+          wget -O ~/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -o ~/.sonar/build-wrapper-linux-x86.zip -d ~/.sonar/
+          echo "PATH=~/.sonar/build-wrapper-linux-x86:$PATH" >> $GITHUB_ENV
+      - name: Run CMake
+        run: cmake .
+      - name: Run Build Wrapper
+        run: build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+      - run: cat bw-output/build-wrapper-dump.json
+      - run: cat bw-output/build-wrapper.log
+      - name: Run SonarScanner
+        env:
+          SONAR_SCANNER_OPTS: -server
+        run: |
+          sonar-scanner \
+            -Dsonar.cfamily.build-wrapper-output=bw-output \
+            -Dsonar.projectVersion="$(tox -qqe write_version -- -P)" \
+            -Dsonar.buildString=$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER
+          echo "ANALYSIS_TIME=$(date -Iseconds)" >> $GITHUB_ENV
+      - name: Fetch analysis results
+        run:
+          tox -e get_sonar_results --
+            --branch="$GITHUB_HEAD_REF"
+            --time="$ANALYSIS_TIME"
+            --commit="$(git ls-remote origin $GITHUB_HEAD_REF | cut -f 1)"
+      - name: Show debug information
+        if: ${{ failure() }}
+        run: |
+          cat ./CMakeFiles/CMakeOutput.log || true
+          cat ./thirdparty/boost/bootstrap.log || true
