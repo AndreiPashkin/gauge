@@ -1,0 +1,4 @@
+---
+Checks: 'cppcoreguidelines-*,clang-diagnostic-*,clang-analyzer-*'
+WarningsAsErrors: '*'
+AnalyzeTemporaryDtors: false
