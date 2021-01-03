@@ -1,6 +1,9 @@
 =====
 Gauge
 =====
+.. image:: https://img.shields.io/github/license/andreipashkin/gauge
+   :target: https://github.com/AndreiPashkin/gauge
+   :alt: GitHub
 .. image:: https://readthedocs.org/projects/gauge/badge/?version=latest
    :target: https://gauge.readthedocs.io/en/stable/?badge=latest
    :alt: Documentation Status
