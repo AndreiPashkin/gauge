@@ -79,7 +79,9 @@ if __name__ == "__main__":
 
     base_string = f'{base["major"]}.{base["minor"]}.{base["patch"]}'
     version.base = base_string
-    version_string = version.serialize(style=dunamai.Style.SemVer)
+    version_string = version.serialize(
+        style=dunamai.Style.SemVer, dirty=version.dirty
+    )
 
     if arguments.print_version:
         print(version_string)
