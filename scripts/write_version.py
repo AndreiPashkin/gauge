@@ -44,6 +44,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "-p", "--upgrade-patch", action="store_true", default=False
     )
+    parser.add_argument(
+        "-P", "--print-version", action="store_true", default=False
+    )
     arguments = parser.parse_args()
     if (
         arguments.upgrade_major
@@ -78,5 +81,8 @@ if __name__ == "__main__":
     version.base = base_string
     version_string = version.serialize(style=dunamai.Style.SemVer)
 
-    with open("VERSION", "w") as version_file:
-        version_file.write(version_string)
+    if arguments.print_version:
+        print(version_string)
+    else:
+        with open("VERSION", "w") as version_file:
+            version_file.write(version_string)
