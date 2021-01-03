@@ -1,6 +1,7 @@
 #ifndef GAUGE_BENCHMARK_HPP
 #define GAUGE_BENCHMARK_HPP
 #include <chrono>
+#include <string>
 #include <unordered_map>
 
 class Timer {
