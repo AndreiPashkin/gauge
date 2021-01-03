@@ -1,0 +1,101 @@
+# For documentation please refer to:
+#   https://docs.github.com/en/free-pro-team@latest/actions
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  black-check:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Cache Pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+      - name: Cache Tox environments
+        uses: actions/cache@v2
+        with:
+          path: .tox
+          key: ${{ runner.os }}-tox-${{ hashFiles('tox.ini') }}
+      - run: pip install tox>=3
+      - run: tox -e black-check
+  clang-tidy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8-dev'
+      - name: Cache C++ third-party dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/thirdparty
+          key: ${{ runner.os }}-thirdparty-${{ hashFiles('FetchDependencies.cmake') }}
+      - name: Install CMake 3.19
+        run: sudo snap install cmake --channel=3.19/stable --classic
+      - run: |
+          sudo apt-get purge -y clang*
+          sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy-11 clang-11
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-11 0
+          clang-tidy --version
+        env:
+          CLANG_APT: |
+            # i386 not available
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            # 10
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            # 11
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+      - run: cmake .
+      - run: make clang-tidy
+  clang-format-check:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Cache C++ third-party dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ github.workspace }}/thirdparty
+          key: ${{ runner.os }}-thirdparty-${{ hashFiles('FetchDependencies.cmake') }}
+      - name: Install CMake 3.19
+        run: sudo snap install cmake --channel=3.19/stable --classic
+      - run: |
+          sudo apt-get purge -y clang*
+          sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y clang-format-11 clang-11
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-11 0
+          clang-format --version
+        env:
+          CLANG_APT: |
+            # i386 not available
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic main
+            # 10
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main
+            # 11
+            deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+            deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-11 main
+      - run: cmake .
+      - run: make clang-format-check
