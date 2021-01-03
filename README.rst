@@ -7,6 +7,8 @@ Gauge
 .. image:: https://readthedocs.org/projects/gauge/badge/?version=latest
    :target: https://gauge.readthedocs.io/en/stable/?badge=latest
    :alt: Documentation Status
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
 
 Low-overhead streaming (or continuous) OpenTracing-compatible Python profiler.
 
