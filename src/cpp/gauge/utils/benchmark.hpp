@@ -10,9 +10,9 @@ private:
         long long   observations_count = 0;
         long double average            = 0;
     };
-    std::unordered_map<std::string, Average> averages;
+    std::unordered_map<std::string, Average> averages{};
     std::unordered_map<std::string, std::chrono::steady_clock::time_point>
-        pending;
+        pending{};
 
 public:
     Timer() = default;
