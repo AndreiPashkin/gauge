@@ -14,6 +14,9 @@ SEMVER_PATTERN = (
     r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
     r"(?:\+(?P<revision>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
 )
+# This is necessary to fix https://git.io/JLAg4.
+dunamai._VALID_SEMVER = SEMVER_PATTERN
+
 VERSION_FILE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION"
 )
