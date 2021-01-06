@@ -50,6 +50,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-P", "--print-version", action="store_true", default=False
     )
+    parser.add_argument("-b", "--build-string")
     arguments = parser.parse_args()
     if (
         arguments.upgrade_major
@@ -79,11 +80,13 @@ if __name__ == "__main__":
         base["minor"] += 1
     if arguments.upgrade_patch:
         base["patch"] += 1
+    if arguments.build_string:
+        version.tagged_metadata = arguments.build_string
 
     base_string = f'{base["major"]}.{base["minor"]}.{base["patch"]}'
     version.base = base_string
     version_string = version.serialize(
-        style=dunamai.Style.SemVer, dirty=version.dirty
+        style=dunamai.Style.SemVer, dirty=version.dirty, tagged_metadata=True
     )
 
     if arguments.print_version:
