@@ -50,6 +50,8 @@ jobs:
           sudo apt-get purge -y clang*
           sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo apt-get clean
           sudo apt-get update
           sudo apt-get install -y clang-tidy-11 clang-11
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-11 0
@@ -86,6 +88,8 @@ jobs:
           sudo apt-get purge -y clang*
           sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo apt-get clean
           sudo apt-get update
           sudo apt-get install -y clang-format-11 clang-11
           sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-11 0
@@ -143,6 +147,8 @@ jobs:
           sudo apt-get purge -y clang*
           sudo sh -c "echo '$CLANG_APT' >> /etc/apt/sources.list"
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo apt-get clean
           sudo apt-get update
           sudo apt-get install -y clang-11 lldb-11 lld-11 clangd-11
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang-11 100
