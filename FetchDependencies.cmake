@@ -1,6 +1,9 @@
 set(THIRD_PARTY ${CMAKE_SOURCE_DIR}/thirdparty)
 file(MAKE_DIRECTORY ${THIRD_PARTY})
 
+# That is required mainly for building B2 build-system when building Boost.
+set(ENV{CXX} "${CMAKE_CXX_COMPILER}")
+
 # Fetch Boost.
 # TODO: Can it be made partial?
 if(NOT EXISTS "${THIRD_PARTY}/boost/")
