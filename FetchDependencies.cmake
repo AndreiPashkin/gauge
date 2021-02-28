@@ -1,54 +1,40 @@
-set(THIRD_PARTY ${CMAKE_SOURCE_DIR}/thirdparty)
 file(MAKE_DIRECTORY ${THIRD_PARTY})
-
-# That is required mainly for building B2 build-system when building Boost.
-set(ENV{CXX} "${CMAKE_CXX_COMPILER}")
 
 # Fetch Boost.
 # TODO: Can it be made partial?
-if(NOT EXISTS "${THIRD_PARTY}/boost/")
+if(NOT EXISTS "${BOOST_URL}")
     message(NOTICE "Fetching Boost...")
-    FetchContent_Declare(
-        boost
-        GIT_REPOSITORY https://github.com/boostorg/boost.git
-        GIT_TAG        boost-1.75.0
-        GIT_SHALLOW    TRUE
-        GIT_PROGRESS   TRUE
-        SOURCE_DIR     ${THIRD_PARTY}/boost
-    )
-    FetchContent_GetProperties(boost)
-    if(NOT boost_POPULATED)
-        FetchContent_Populate(boost)
-    endif()
     if(UNIX)
-        execute_process (
-            COMMAND ./bootstrap.sh
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${boost_SOURCE_DIR}
+        set(
+            BOOST_URL
+            https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz
         )
-        if(NOT result EQUAL 0)
-            message( FATAL_ERROR "Failed to build Boost: ${result}")
-        endif()
-        execute_process (
-            COMMAND ./b2 headers
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${boost_SOURCE_DIR}
-        )
-        if(NOT result EQUAL 0)
-            message( FATAL_ERROR "Failed to build Boost: ${result}")
-        endif()
+        set(BOOST_ARCHIVE "${CMAKE_BINARY_DIR}/boost.tar.gz")
+        set(BOOST_ARCHIVE_SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a)
     elseif(WIN32)
-        execute_process (
-            COMMAND ./bootstrap.bat
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${boost_SOURCE_DIR}
+        set(
+            BOOST_URL
+            https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.zip
         )
-        execute_process (
-            COMMAND b2 headers
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${boost_SOURCE_DIR}
-        )
+        set(BOOST_ARCHIVE "${CMAKE_BINARY_DIR}/boost.zip")
+        set(BOOST_ARCHIVE_SHA256 caf36d7c13b3d8ce62282a64a695113945a13b0f1796a45160726d04295f95ed)
+    else()
+        message(FATAL_ERROR "Platform is not supported.")
     endif()
+    file(
+        DOWNLOAD ${BOOST_URL} ${BOOST_ARCHIVE}
+        STATUS result
+        SHOW_PROGRESS
+        EXPECTED_HASH SHA256=${BOOST_ARCHIVE_SHA256}
+    )
+    set(BOOST_TEMP "${CMAKE_BINARY_DIR}/boost")
+    file(
+        ARCHIVE_EXTRACT INPUT ${BOOST_ARCHIVE}
+        DESTINATION ${BOOST_TEMP}
+    )
+    file(GLOB result RELATIVE ${BOOST_TEMP} "${BOOST_TEMP}/*")
+    file(RENAME "${BOOST_TEMP}/${result}" ${BOOST_ROOT})
+    file(REMOVE_RECURSE ${BOOST_TEMP})
 endif()
 
 # Fetch Pybind11.

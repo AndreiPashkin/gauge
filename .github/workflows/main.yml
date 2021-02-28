@@ -141,6 +141,12 @@ jobs:
         with:
           path: /home/runner/.sonar/cache
           key: ${{ runner.os }}-sonar-${{ hashFiles('sonar-project.properties') }}
+      - run: |
+          echo $GITHUB_HEAD_REF
+          echo $GITHUB_REF
+          echo $GITHUB_SHA
+          echo "$(git log --pretty=%H -1)"
+          echo "$(git log --no-merges --pretty=%H -1)"
       - name: Install CMake 3.19
         run: sudo snap install cmake --channel=3.19/stable --classic
       - name: Install Clang

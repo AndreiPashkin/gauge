@@ -1,6 +1,13 @@
 Change log
 ==========
 
+0.0.3 (WIP)
+-----------
+- Introduced SonarLint (#5).
+- Introduced Black (#4)
+- Introduced Clang-Tidy (#26).
+- Introduced Clang-Format (#4).
+
 0.0.2 (2020-09-12)
 ------------------
 - Documentation-generator setup (#1).

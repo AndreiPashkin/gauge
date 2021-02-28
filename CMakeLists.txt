@@ -1,5 +1,5 @@
 # Project's C++ extension build configuration.
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 project(gauge)
 
 include(FetchContent)
@@ -8,16 +8,17 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(FETCHCONTENT_QUIET OFF)
-
-include(FetchDependencies.cmake)
+set(THIRD_PARTY ${CMAKE_SOURCE_DIR}/thirdparty)
 
 # Add Boost library.
+set(BOOST_ROOT ${THIRD_PARTY}/boost)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 
-set(BOOST_ROOT ${THIRD_PARTY}/boost)
-find_package(Boost 1.73.0 REQUIRED)
+include(FetchDependencies.cmake)
+
+find_package(Boost 1.75.0 REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Boost is not found.")
